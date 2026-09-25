@@ -1,6 +1,7 @@
 #pragma once
 #include "ClassSnapshotFile.h"
 #include "functions.h"
+#include "version.h"
 
 void SnapshotFile::parseFile(const std::filesystem::path& filePath, uint32_t indFile)
 {
@@ -114,4 +115,44 @@ SnapshotFile::SnapshotFile(const std::filesystem::path& path, bool recursive, co
 SnapshotFile::SnapshotFile(const std::vector<std::filesystem::path>& files)
 {
     this->parseFileSpace(files);
+}
+
+void SnapshotFile::saveSnapshotFile(const std::filesystem::path& pathToSave)
+{
+    std::ofstream file;
+
+    file.exceptions(std::ios::failbit | std::ios::badbit);
+
+    try
+    {
+        file.open(pathToSave, std::ios::out | std::ios::binary);
+
+        file.write("SNAP", 4);
+        file.write(reinterpret_cast<const char*>(&version::snapshotFormat), sizeof(version::snapshotFormat));
+
+        std::uint32_t fileCount = this->fileData.size();
+
+        file.write(reinterpret_cast<const char*>(&fileCount), 4);
+
+        for (auto i = 0; i < fileCount; i++)
+        {
+            std::uint32_t pathSize = this->fileData[0]
+        }
+    }
+    catch (const std::ios_base::failure& error)
+    {
+        file.exceptions(std::ios::goodbit);
+        file.close();
+
+
+        std::error_code err;
+        std::filesystem::remove(pathToSave, err);
+
+        if (err)
+        {
+            std::throw_with_nested(std::system_error(err));
+        }
+
+        throw;
+    }
 }

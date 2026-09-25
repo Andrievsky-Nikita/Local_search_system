@@ -33,6 +33,8 @@ public:
 
     SnapshotFile(const std::filesystem::path& pathDir, bool recursive, const std::unordered_set<std::string>& extensions);
     SnapshotFile(const std::vector<std::filesystem::path>& files);
+
+    void saveSnapshotFile(const std::filesystem::path& pathToSave);
 };
 
 struct SnapshotFile::FileInfo
@@ -51,7 +53,6 @@ struct SnapshotFile::FileInfo
         lastWriteTime(newLastWriteTime),
         size(newSize)
     {}
-
 };
 
 struct SnapshotFile::MatchInfo
