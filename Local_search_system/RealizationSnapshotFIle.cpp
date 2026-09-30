@@ -158,7 +158,38 @@ void SnapshotFile::saveSnapshotFile(const std::filesystem::path& pathToSave)
             file.write(reinterpret_cast<const char*>(&time),sizeof(time));
         }
 
+        using Iterator = decltype(invertedIndex)::const_iterator;
 
+        std::vector<Iterator> sortedKeys(invertedIndex.begin(), invertedIndex.end());
+
+        std::sort(sortedKeys.begin(), sortedKeys.end(),
+            [](const auto& lhs, const auto& rhs)
+            {
+                return lhs->first < rhs->first;
+            });
+
+        std::uint32_t wordCount = static_cast<std::uint32_t>(invertedIndex.size());
+
+        file.write(reinterpret_cast<const char*>(&wordCount),sizeof(wordCount));
+
+        
+
+
+
+
+
+
+
+
+
+
+        /*uint64_t pos = static_cast<uint64_t>(file.tellp());
+
+        file.seekp(8, std::ios::beg);
+
+        file.write(reinterpret_cast<const char*>(&pos), sizeof(pos));
+
+        file.seekp(pos, std::ios::beg);*/
     }
     catch (const std::ios_base::failure& error)
     {

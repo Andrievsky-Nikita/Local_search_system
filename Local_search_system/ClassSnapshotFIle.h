@@ -8,11 +8,13 @@
 #include <initializer_list>
 #include <unordered_set>
 #include <unordered_map>
+#include <map>
 #include <utility>
 #include <cstdint>
 #include <algorithm>
 #include <stdexcept>
 #include <chrono>
+#include <cmath>
 
 class SnapshotFile
 {
