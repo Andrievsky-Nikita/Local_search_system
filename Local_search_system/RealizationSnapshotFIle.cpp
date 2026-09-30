@@ -73,7 +73,7 @@ void SnapshotFile::parseFile(const std::filesystem::path& filePath, uint32_t ind
             processWord(currStr, countLines);
         }
     }
-    catch (const std::ios_base::failure& ext)
+    catch (const std::ios_base::failure&)
     {
         fileData[indFile].bad = true;
 
@@ -130,14 +130,35 @@ void SnapshotFile::saveSnapshotFile(const std::filesystem::path& pathToSave)
         file.write("SNAP", 4);
         file.write(reinterpret_cast<const char*>(&version::snapshotFormat), sizeof(version::snapshotFormat));
 
-        std::uint32_t fileCount = this->fileData.size();
+        file.write(reinterpret_cast<const char*>(static_cast<std::uintmax_t>(0)), sizeof(std::uintmax_t));
+
+        std::uint32_t fileCount = static_cast<uint32_t>(fileData.size());
 
         file.write(reinterpret_cast<const char*>(&fileCount), 4);
 
-        for (auto i = 0; i < fileCount; i++)
+        for (const auto& fileInfo : fileData)
         {
-            std::uint32_t pathSize = this->fileData[0]
+            auto pathString = fileInfo.path.u8string();
+
+            uint32_t sizePath = pathString.size();
+
+            file.write(reinterpret_cast<const char*>(&sizePath), sizeof(sizePath));
+            file.write(reinterpret_cast<const char*>(&pathString), sizePath);
+
+            uint8_t flag = fileInfo.bad ? 1 : 0;
+
+            file.write(reinterpret_cast<const char*>(&flag), sizeof(flag));
+
+            uint64_t sizeFile = fileInfo.size;
+
+            file.write(reinterpret_cast<const char*>(&sizeFile), sizeof(sizeFile));
+
+            auto time = fileInfo.lastWriteTime.time_since_epoch().count();
+
+            file.write(reinterpret_cast<const char*>(&time),sizeof(time));
         }
+
+
     }
     catch (const std::ios_base::failure& error)
     {

@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <stdexcept>
+#include <chrono>
 
 class SnapshotFile
 {
